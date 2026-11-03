@@ -1,0 +1,36 @@
+---
+description: dio, json_serializable, Result failures, secure token storage
+alwaysApply: true
+---
+
+# Data layer
+
+One `Dio` in `core/network`. Base URL `https://dummyjson.com`. Set connect and receive timeouts. An interceptor sets `Authorization: Bearer <token>` when the session has a token.
+
+| Call | Endpoint |
+| --- | --- |
+| Login | `POST /auth/login` |
+| Page | `GET /products?limit=20&skip=` |
+| Detail | `GET /products/:id` |
+
+Services may throw `DioException`. Repositories catch it and return `Result<T>` (`Success` or `Failure`). Cubits switch on `Result` and do not import `Dio`.
+
+```dart
+sealed class Result<T> {
+  const Result();
+}
+final class Success<T> extends Result<T> {
+  const Success(this.value);
+  final T value;
+}
+final class FailureResult<T> extends Result<T> {
+  const FailureResult(this.failure);
+  final Failure failure;
+}
+```
+
+`Failure` is sealed: `NetworkFailure`, `UnauthorizedFailure`, `UnexpectedFailure`.
+
+API responses are `*Dto` classes in `data/dto/`, with `@JsonSerializable()` and committed `*.g.dart` files. Repositories live in `data/repositories/`. Regenerate with `fvm dart run build_runner build --delete-conflicting-outputs`.
+
+The access token lives only in `flutter_secure_storage`. Page size is 20. `skip` equals the loaded count. Stop when `items.length >= total` or the page is empty. Pull-to-refresh replaces the list; load-more appends. Keep the current list on screen during refresh and load-more.

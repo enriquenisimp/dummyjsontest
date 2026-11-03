@@ -1,0 +1,21 @@
+---
+description: Dart style for lib and test
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# Dart style
+
+- `final` fields, const constructors, trailing commas on widget arguments.
+- Sealed types and switch expressions for state and `Result`. Exhaustive switches, no default that hides a new case.
+- Public APIs take and return concrete types. JSON parsing stays in generated `fromJson`.
+- `snake_case` files, `PascalCase` types, one public widget or cubit per file.
+- After Dart edits, run `fvm flutter analyze` and fix every new issue.
+
+```dart
+return switch (state) {
+  LoginInitial() => const LoginForm(),
+  LoginSubmitting() => const CircularProgressIndicator(),
+  LoginFailure(:final failure) => LoginForm(message: failure.message),
+};
+```

@@ -1,0 +1,33 @@
+---
+description: Feature-first UI and data layers, no domain layer
+alwaysApply: true
+---
+
+# Architecture
+
+Two layers, from the Flutter app-architecture guide. No domain layer and no use cases.
+
+| Piece | Role |
+| --- | --- |
+| View | `StatelessWidget` that renders cubit state |
+| View model | One `Cubit` per screen |
+| Repository | Only type a cubit calls for I/O |
+| Service | API class used only by its repository |
+
+Dependency direction: view → cubit → repository → service → `Dio`.
+
+```
+lib/
+  main.dart                 # bind Flutter, runApp
+  app/                      # MaterialApp.router, GoRouter, theme
+  core/error/failure.dart   # sealed Failure
+  core/error/result.dart    # sealed Result<T>
+  core/network/             # shared Dio
+  core/storage/             # secure token storage
+  features/<feature>/data/dto/
+  features/<feature>/data/repositories/
+  features/<feature>/data/  # API services
+  features/<feature>/presentation/<screen>/
+```
+
+A page owns `BlocProvider`. The view owns `BlocBuilder` / `BlocListener`. API response models are `*Dto` classes in `data/dto/`. Repositories live in `data/repositories/`. Each screen is its own `presentation/<screen>/` folder with sealed state, Cubit, page, and view.

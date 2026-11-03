@@ -1,0 +1,17 @@
+---
+description: Pin Flutter 3.47.1 and require FVM for every command
+alwaysApply: true
+---
+
+# Flutter SDK
+
+- Flutter **3.47.1**, Dart **3.13.1**, revision `6655482ec06e547f90abf8ae7590466f4415978d`.
+- `pubspec.yaml` stays `environment.sdk: ^3.13.1`. `.fvmrc` stays `"flutter": "3.47.1"`.
+- Run tooling with FVM. The shell `flutter` is 3.35.5 / Dart 3.9.2 and cannot compile this app.
+
+```bash
+fvm flutter analyze
+fvm flutter test
+fvm flutter run
+fvm dart run build_runner build --delete-conflicting-outputs
+```

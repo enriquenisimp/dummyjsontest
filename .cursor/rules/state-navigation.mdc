@@ -1,0 +1,27 @@
+---
+description: Cubit view models and go_router auth redirects
+alwaysApply: true
+---
+
+# State and navigation
+
+View models are `flutter_bloc` Cubits. Screen state is a sealed class. `emit` a new instance; never mutate fields.
+
+```dart
+onPressed: () => context.read<LoginCubit>().submit(),
+// rebuild:
+BlocBuilder<LoginCubit, LoginState>(builder: ...)
+// snackbar or one-off navigation:
+BlocListener<LoginCubit, LoginState>(listener: ...)
+```
+
+`BlocProvider` creates and closes the cubit. Feature state does not use `setState`, Bloc events, Riverpod, or `provider`.
+
+Navigation is `go_router`. Routes are the `AppRoute` enum in `lib/app/app_route.dart` (`path` + `name`). Do not hardcode path strings in redirects or navigation.
+
+A session cubit sits above `MaterialApp.router`. Its stream drives `GoRouter.refreshListenable`. Startup state is `unknown` until secure storage returns, so the redirect stays on splash and does not flash login. Then:
+
+- no token, route other than login → login
+- token on login or splash → products
+
+The router reads the session cubit. It does not call secure storage itself.
